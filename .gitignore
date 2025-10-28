@@ -1,0 +1,24 @@
+# Node dependencies
+node_modules/
+
+# Build directories
+frontend/node_modules/
+frontend/build/
+dist/
+
+# Environment files
+.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Uploads or temporary files
+uploads/
+tmp/
+.DS_Store
+
+# SQLite database (optional — only if you don’t want to push your test DB)
+meter_data.db
+meter_results.db
