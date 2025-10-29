@@ -2,6 +2,35 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 function App() {
+   const [authenticated, setAuthenticated] = useState(false);
+  const [inputKey, setInputKey] = useState("");
+  const correctKey = "2025@Met@L@b"; // secure pass key
+
+  // ✅ Check local storage for existing authentication
+  useEffect(() => {
+    const isAuth = localStorage.getItem("authenticated");
+    if (isAuth === "true") setAuthenticated(true);
+    fetchData();
+    fetchCount();
+  }, []);
+
+  const handleAuth = () => {
+    if (inputKey === correctKey) {
+      setAuthenticated(true);
+      localStorage.setItem("authenticated", "true");
+    } else {
+      alert("Invalid access key. Please try again.");
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem("authenticated");
+    setAuthenticated(false);
+    setInputKey("");
+  };
+
+
+
   const [files, setFiles] = useState([]);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -96,6 +125,52 @@ function App() {
     setFilteredData(result);
   };
 
+  // 🧩 Authentication screen (before access)
+  if (!authenticated) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          backgroundImage: "url('/lab.jpeg')",
+          fontFamily: "Segoe UI, sans-serif",
+        }}
+      >
+        <h2 style={{ color: "#333", marginBottom: 20 }}>🔐 Secure Access Required</h2>
+        <input
+          type="password"
+          placeholder="Enter Access Key"
+          value={inputKey}
+          onChange={(e) => setInputKey(e.target.value)}
+          style={{
+            padding: "10px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+            width: "250px",
+            marginBottom: "15px",
+            textAlign: "center",
+          }}
+        />
+        <button
+          onClick={handleAuth}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: 5,
+            cursor: "pointer",
+          }}
+        >
+          Access System
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
@@ -112,6 +187,23 @@ function App() {
       <h2 style={{ color: "#333", marginBottom: 20, textAlign: "center" }}>
         📊 Meter Test Results Consolidator
       </h2>
+
+       <button
+        onClick={logout}
+        style={{
+          position: "absolute",
+          top: 20,
+          right: 20,
+          padding: "8px 16px",
+          backgroundColor: "#e74c3c",
+          color: "#fff",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+        }}
+      >
+        Logout
+      </button>
 
       {/* ✅ Total count display */}
       <h3>
