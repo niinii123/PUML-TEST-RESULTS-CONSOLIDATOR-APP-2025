@@ -125,6 +125,37 @@ function App() {
     setFilteredData(result);
   };
 
+  const handleExportFiltered = async () => {
+  if (!filteredData.length) {
+    alert("No filtered data available to export");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/export-filtered", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ rows: filteredData }),
+    });
+
+    if (!res.ok) throw new Error("Failed to export file");
+
+    // Convert the response to a downloadable file
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Filtered_Results.xlsx";
+    a.click();
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error("Export failed:", err);
+    alert("Failed to export filtered data");
+  }
+};
+
+
+
   // 🧩 Authentication screen (before access)
   if (!authenticated) {
     return (
@@ -135,11 +166,12 @@ function App() {
           alignItems: "center",
           justifyContent: "center",
           height: "100vh",
-          backgroundImage: "url('/lab.jpeg')",
+          backgroundImage: "url('/lab1.jpg')",
+          backgroundSize: "cover", //ensure the b
           fontFamily: "Segoe UI, sans-serif",
         }}
       >
-        <h2 style={{ color: "#333", marginBottom: 20 }}>🔐 Secure Access Required</h2>
+        <h2 style={{ color: "#333", marginBottom: 20 }}>Secure Access Required</h2>
         <input
           type="password"
           placeholder="Enter Access Key"
@@ -207,7 +239,7 @@ function App() {
 
       {/* ✅ Total count display */}
       <h3>
-        Total Uploaded Meter Results: {totalCount}
+        Total Tested Meters: {totalCount} 
       </h3>
 
 
@@ -267,6 +299,36 @@ function App() {
           >
             Delete All
           </button>
+          <button
+             onClick={() => window.open("http://localhost:5000/export")}
+             style={{
+             background: "#0000FF",
+             color: "white",
+             border: "none",
+             padding: "10px 18px",
+             borderRadius: "6px",
+             cursor: "pointer",
+             marginLeft: "12px",
+           }}>
+             Export All 
+          </button>
+          <button
+            onClick={handleExportFiltered}
+            style={{
+            padding: "10px 20px",
+            backgroundColor: "#000000",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+            marginTop: "10px",
+            marginLeft: "10px"
+         }}
+         >
+          Export Filtered 
+        </button>
+
+
         </div>
       </div>
 
@@ -340,6 +402,7 @@ function App() {
         }}
       >
         <tbody>
+
           {filteredData.map((row, i) => (
             <tr key={i}>
               {row.map((cell, j) => (
